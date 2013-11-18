@@ -80,5 +80,19 @@
     return [variousPaths copy];
 }
 
+/* We need a way to detect if the user has tapped the line. Our UIBezierPath object does not allow us to do hit testing. Fortunately, we can use a method called CGPathCreateCopyByStrokingPath which provides an outline of our current UIBezierPath which does allow hit testing. */
++(UIBezierPath *)tapTargetForPath:(UIBezierPath *)path
+{
+    /* CGPathCreateCopyByStrokingPath is a function that returns a CGPathRef that strokes the inside of our bezierpath. */
+    CGPathRef tapTargetPath = CGPathCreateCopyByStrokingPath(path.CGPath, NULL, fmaxf(10.0f, path.lineWidth), path.lineCapStyle, path.lineJoinStyle, path.miterLimit);
+    /* Create a UIBezierPath object with the CGPath. */
+    UIBezierPath *tapTarget = [UIBezierPath bezierPathWithCGPath:tapTargetPath];
+    
+    /* CGPathRelease releases the CGPath variable since it is not managed by ARC. */
+    CGPathRelease(tapTargetPath);
+    
+    return tapTarget;
+}
+
 
 @end
